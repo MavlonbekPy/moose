@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from .models import Post, Contact, Category
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
