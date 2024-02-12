@@ -7,7 +7,8 @@ import requests
 def home_view(request):
     posts = Post.objects.filter(is_published=True)
     d = {
-        'posts': posts
+        'posts': posts,
+        'home': 'active'
     }
     return render(request, 'index.html', context=d)
 
@@ -26,14 +27,18 @@ def blog_view(request):
     page_obj = Paginator(posts, 2)
 
     d = {
-        'posts': page_obj.page(page)
+        'posts': page_obj.page(page),
+        'blog': 'active'
     }
 
     return render(request, 'blog.html', context=d)
 
 
 def about_view(request):
-    return render(request, 'about.html')
+    d = {
+        'about': 'active'
+    }
+    return render(request, 'about.html', context=d)
 
 
 def blog_single_view(request, post_id):
@@ -57,7 +62,7 @@ def category_view(request):
     else:
         posts = Post.objects.all()
 
-    return render(request, 'category_view.html', {'posts': posts, 'categories': categories})
+    return render(request, 'category_view.html', {'posts': posts, 'categories': categories}, )
 
 
 def contact_view(request):
@@ -70,4 +75,4 @@ def contact_view(request):
         token = "6749312297:AAHVOEH5pugcBZZt3aRaXwf8YgflvnQO6vg"
         requests.get(f"""https://api.telegram.org/bot{token}/sendMessage?chat_id=5210463524&text=MOOSE\nid: {obj.id}\nname: {obj.name}\nemail: {obj.email}\nmessage: {obj.message}""")
         return redirect('/contact/')
-    return render(request, 'contact.html')
+    return render(request, 'contact.html',context={'contact': 'active'})
