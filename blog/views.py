@@ -1,6 +1,7 @@
-from .models import Post, Contact, Category
+from .models import Post, Contact, Category, Comment
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
+import requests
 
 
 def home_view(request):
@@ -36,9 +37,15 @@ def about_view(request):
 
 
 def blog_single_view(request, post_id):
+    if request.method == 'POST':
+        data = request.POST
+        obj = Comment.objects.create(post_id=post_id, name=data['name'], email=data['email'], message=data['message'])
+        obj.save()
+        return redirect(f'/blog_single/{post_id}')
     post = get_object_or_404(Post, pk=post_id)
-    context = {'post': post}
-    return render(request, 'blog_single.html', context)
+    comments = Comment.objects.filter(post_id=post_id)
+
+    return render(request, 'blog_single.html', context={'post': post, 'comments': comments})
 
 
 def category_view(request):
@@ -59,5 +66,8 @@ def contact_view(request):
         obj = Contact.objects.create(name=data.get('name'), email=data.get('email'), subject=data.get('subject'),
                                      message=data.get('message'))
         obj.save()
+        """Telegram Notify"""
+        token = "6749312297:AAHVOEH5pugcBZZt3aRaXwf8YgflvnQO6vg"
+        requests.get(f"""https://api.telegram.org/bot{token}/sendMessage?chat_id=5210463524&text=MOOSE\nid: {obj.id}\nname: {obj.name}\nemail: {obj.email}\nmessage: {obj.message}""")
         return redirect('/contact/')
     return render(request, 'contact.html')
