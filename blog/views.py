@@ -5,7 +5,7 @@ import requests
 
 
 def home_view(request):
-    posts = Post.objects.filter(is_published=True)
+    posts = Post.objects.filter(is_published=True).order_by('created_at')[:4]
     d = {
         'posts': posts,
         'home': 'active'
